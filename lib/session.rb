@@ -4,18 +4,29 @@ class Session
   # find the cookie for this app
   # deserialize the cookie into a hash
   def initialize(req)
-		@cookie = req.cookies.select {|k, v| k == "_rails_lite_app"}
-		@cookie = {} if @cookie.nil?
+		if req.cookies["_rails_lite_app"]
+			@cookie = JSON.parse(req.cookies["_rails_lite_app"])
+		else
+			@cookie = {}
+		end
   end
 
   def [](key)
+		@cookie[key]
   end
 
   def []=(key, val)
+		@cookie[key] = val
   end
 
   # serialize the hash into json and save in a cookie
   # add to the responses cookies
   def store_session(res)
+		res.set_cookie("_rails_lite_app", JSON.generate(@cookie))
   end
 end
+
+
+# {
+# 	"_rails_lite_app": {}
+# }
